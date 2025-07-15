@@ -3,6 +3,10 @@ import java.util.*;
 
 public class Services {
 
+    // global
+    private final String filePath = "C:\\Users\\Kerby\\Documents\\JAVA OOP CLI\\Grade-Book-System-CLI\\src\\DataBase.txt";
+    private final File file = new File(filePath);
+
     public void landingPage(Scanner scanner){
 
         while(true){
@@ -19,7 +23,7 @@ public class Services {
                 case "1" -> { // add student
                     addStudent(scanner);
                 }case "2" -> { // add assignment
-                    
+                    addAssignment(scanner);
                 }case "3" -> { // enter grade
                     
                 }case "4" -> { // view report
@@ -38,27 +42,63 @@ public class Services {
     public void addStudent(Scanner scanner){
 
         try {
-            String filePath = "C:\\Users\\Kerby\\Documents\\JAVA OOP CLI\\Grade-Book-System-CLI\\src\\DataBase.txt";
-            File file = new File(filePath);
-            FileWriter fileWriter = new FileWriter(file);
 
+            // create the txt file path, read/write
+            FileWriter fileWriter = new FileWriter(file, true);
+
+            // get user input
             System.out.print("Enter student name: ");
             String studentName = scanner.nextLine();
 
+            // check if characters only
             String regexString = "[a-zA-Z\s]{2,30}";
             boolean isStudentNameValid = false;
             if(studentName.matches(regexString)){
                 isStudentNameValid = true;
             }
 
+            // final checking user input
             if(isStudentNameValid == true){
                 System.out.println("Student added.\n");
-                fileWriter.append(studentName);
+                fileWriter.append("\n\nName: " + studentName 
+                                  + "\nAssignment: "
+                                  + "\nGrade: "
+                                  + "\n----------------------");
             }else{
                 System.out.println("Student name contains letters only (min 2, max 30)\n");
             }
 
             fileWriter.close();
+        } catch (Exception e) { // file handling
+            System.out.println("File doesnt exist");
+        }
+
+    }
+
+    public void addAssignment(Scanner scanner){
+
+        try {
+            // create the txt file path, read/write
+            FileWriter fileWriter = new FileWriter(file, true);
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            // check if has student in database, else return
+            if(bufferedReader.readLine() == null){
+                System.out.println("No students Added!\n");
+                bufferedReader.close();
+                fileWriter.close();
+                return;
+            }
+            
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            System.out.println();
+            fileWriter.close();
+            bufferedReader.close();
         } catch (Exception e) {
             System.out.println("File doesnt exist");
         }
