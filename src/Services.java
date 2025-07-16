@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Services {
 
-    // global
+    // global path
     private final String filePath = "C:\\Users\\Kerby\\Documents\\JAVA OOP CLI\\Grade-Book-System-CLI\\src\\DataBase.txt";
     private final File file = new File(filePath);
 
@@ -83,7 +83,7 @@ public class Services {
             FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-            // check if has student in database, else return
+            // check students database
             if(bufferedReader.readLine() == null){
                 System.out.println("No students Added!\n");
                 bufferedReader.close();
@@ -91,16 +91,91 @@ public class Services {
                 return;
             }
             
+            // first buffer loop
+            // print all student(s) name
             String line;
+            int i = 1;
             while ((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
+                if(line.contains("Name: ")){
+                    System.out.printf("Student %d %s\n", i, line);
+                    i++;
+                }
             }
 
+            // reset the index of database
+            bufferedReader.close();
+            bufferedReader = new BufferedReader(new FileReader(file));
+
+            // get user input search
+            System.out.print("Enter name of the student: ");
+            String studentName = scanner.nextLine();
+
+            // algorithm for search
+            String line2;
+            boolean hasSearch = false;
+            while ((line2 = bufferedReader.readLine()) != null) {
+                if(line2.equals("Name: " + studentName) ||
+                   line2.toUpperCase().equals("NAME: " + studentName.toUpperCase())){
+                    hasSearch = true;
+                    break;
+                }
+            }
+
+            // check if has search student
+            if(hasSearch == true){
+
+                // check if student already have an assignment
+                String lineAssignment = bufferedReader.readLine().replace("Assignment: ", "");
+                if(lineAssignment.equals("")){ // no assignment
+
+                    // get assignment
+                    System.out.printf("Add Assignment to %s: ", studentName);
+                    String addAssignment = scanner.nextLine();
+
+                    // reset database index
+                    bufferedReader.close();
+                    bufferedReader = new BufferedReader(new FileReader(file));
+
+                    // convert database into array list to modified
+                    List<String> allLines = new ArrayList<>();
+                    String lineString;
+                    while ((lineString = bufferedReader.readLine()) != null) {
+                        allLines.add(lineString);
+                    }
+
+                    // modifying array list
+                    for(int index = 0; index < allLines.size(); index++){
+                        if(allLines.get(index).equals("Name: " + studentName) || 
+                           allLines.get(index).equals("NAME: " + studentName.toUpperCase())){
+                            // add assignment
+                            allLines.set(index + 1, "Assignment: " + addAssignment);
+                            break;
+                        }
+                    }
+
+                    // clear the current database
+                    FileWriter fileWriterFalse = new FileWriter(file, false);
+                    fileWriterFalse.close();
+                    
+                    // add all lines of array list into cleared database
+                    for(String eachLine : allLines){
+                        fileWriter.append(eachLine + "\n");
+                    }
+
+                }else{ // already have assignment
+                    System.out.println(studentName + " Already have assignment");
+                }
+
+            }else{ // no search name found
+                System.out.println("No student name " + studentName);
+            }
+
+            // new line
             System.out.println();
             fileWriter.close();
             bufferedReader.close();
         } catch (Exception e) {
-            System.out.println("File doesnt exist");
+            System.out.println("File doesnt exist\n");
         }
 
     }
