@@ -25,7 +25,7 @@ public class Services {
                 }case "2" -> { // add assignment
                     addAssignment(scanner);
                 }case "3" -> { // enter grade
-                    
+                    addGrade(scanner);
                 }case "4" -> { // view report
                     
                 }case "5" -> { // exit
@@ -176,6 +176,90 @@ public class Services {
             bufferedReader.close();
         } catch (Exception e) {
             System.out.println("File doesnt exist\n");
+        }
+
+    }
+
+    public void addGrade(Scanner scanner){
+
+        try {
+
+            // TODO check first if the student have an assignment before giving grade
+            // TODO return if it doesnt have assignment 
+            // TODO assignment is require before giving grade
+
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+
+            List<String> lines = new ArrayList<>();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                lines.add(line);
+            } 
+
+            bufferedReader.close();
+
+            int num = 1;
+            for(int i = 0; i < lines.size(); i ++){
+                if(lines.get(i).startsWith("Name: ")){
+                    System.out.printf("Student %d %s\n", num, lines.get(i).replace("Name: ", ""));
+                    num++;
+                }
+            }
+
+            System.out.print("Enter student name: ");
+            String studentName = scanner.nextLine();
+
+            bufferedReader = new BufferedReader(new FileReader(file));
+
+            boolean hasFound = false;
+            String line1;
+            while((line1 = bufferedReader.readLine()) != null){
+                if(line1.equals("Name: " + studentName) ||
+                   line1.toUpperCase().equals("Name: ".toUpperCase() + studentName.toUpperCase())){
+                    hasFound = true;
+                    break;
+                }
+            }
+
+            if(hasFound){
+
+                for(int i = 0; i < lines.size(); i ++){
+                    if(lines.get(i).equals("Name: " + studentName) &&
+                       !(lines.get(i + 2).replace("Grade: ", "").isEmpty())){
+                        System.out.println(studentName + " already has a grade.\n");
+                        bufferedReader.close();
+                        return;
+                    }
+                }
+
+                System.out.printf("Enter grade for %s: ", studentName);
+                String grade = scanner.nextLine();
+
+                for(int i = 0; i < lines.size(); i ++){
+                    if(lines.get(i).equals("Name: " + studentName) ||
+                       lines.get(i).equals("NAME: " + studentName.toUpperCase())){
+                        lines.set(i + 2, "Grade: " + grade);
+                        break;
+                    }
+                }
+
+                // clear the txt file
+                FileWriter fileWriter = new FileWriter(file, false);
+                for(String tempLine : lines){
+                    fileWriter.append(tempLine + "\n");
+                }
+                fileWriter.close();
+
+                System.out.println("Grade Added.");
+                
+            }else{
+                System.out.println("No student found named " + studentName);
+            }
+
+            System.out.println();
+            bufferedReader.close();
+        } catch (Exception e) {
+            System.out.println("File does not exist");
         }
 
     }
