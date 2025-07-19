@@ -184,8 +184,7 @@ public class Services {
 
         try {
 
-            // TODO check first if the student have an assignment before giving grade
-            // TODO return if it doesnt have assignment 
+            // TODO check first if the student have an assignment before giving grade 
             // TODO assignment is require before giving grade
 
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
@@ -198,6 +197,7 @@ public class Services {
 
             bufferedReader.close();
 
+
             int num = 1;
             for(int i = 0; i < lines.size(); i ++){
                 if(lines.get(i).startsWith("Name: ")){
@@ -208,6 +208,17 @@ public class Services {
 
             System.out.print("Enter student name: ");
             String studentName = scanner.nextLine();
+
+            //check if the student already have a assignment
+            boolean studentHasAssignment = false;
+            for(int i = 0; i < lines.size(); i++){
+                if(lines.get(i).startsWith("Name: " + studentName)){
+                    if(lines.get(i + 1).replace("Assignment: ", "") == ""){
+                        System.out.println(studentName + " Doesnt have assignment yet\n");
+                        return;
+                    }
+                }
+            }
 
             bufferedReader = new BufferedReader(new FileReader(file));
 
